@@ -1,4 +1,4 @@
-name: "Notificar no Discord - Back-End"
+name: "Notificar no Discord"
 
 on:
   push:
@@ -24,15 +24,13 @@ jobs:
       - name: Notificar Push no Discord
         if: github.event_name == 'push'
         run: |
-          # Define as variáveis do shell a partir do contexto do GitHub
           ACTOR=${{ github.actor }}
           SHORT_SHA=$(echo "${{ github.sha }}" | cut -c1-7)
           COMMIT_MSG=$(echo "${{ github.event.head_commit.message }}" | sed 's/"/\\"/g' | sed "s/'/\\'/g")
           
-          # Usa aspas duplas no argumento -d para que as variáveis $ACTOR, $SHORT_SHA etc. sejam expandidas
           curl -H "Content-Type: application/json" -X POST -d "{
             \"embeds\": [{
-              \"title\": \"${ACTOR} fez um novo push para main\",
+              \"title\": \" ${ACTOR} fez um novo push para main\",
               \"url\": \"${{ github.event.compare }}\",
               \"description\": \"[${{ github.repository }}]\n\n**Commit**: [`${SHORT_SHA}`](${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}) - ${COMMIT_MSG}\",
               \"color\": 3447003,
