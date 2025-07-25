@@ -28,9 +28,9 @@ jobs:
           COMMIT_MSG=$(echo "${{ github.event.head_commit.message }}" | sed 's/"/\\"/g' | sed "s/'/\\'/g")
           curl -H "Content-Type: application/json" -X POST -d '{
             "embeds": [{
-              "title": "📦 Novo Push para `main`",
+              "title": "📦 Novo Push para main",
               "url": "${{ github.event.compare }}",
-              "description": "`[${{ github.repository }}]`\n\n**Commit**: [`${SHORT_SHA}`](${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}) - `${COMMIT_MSG}`",
+              "description": "[${{ github.repository }}]\n\n**Commit**: [`${SHORT_SHA}`](${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}) - `${COMMIT_MSG}`",
               "color": 3447003,
               "author": {
                 "name": "${{ github.actor }}"
@@ -65,7 +65,7 @@ jobs:
             \"embeds\": [{
               \"title\": \"${STATUS}: #${{ github.event.pull_request.number }}\",
               \"url\": \"${{ github.event.pull_request.html_url }}\",
-              \"description\": \"`[${{ github.repository }}]`\n\n**Título**: ${TITLE}\",
+              \"description\": \"[${{ github.repository }}]\n\n**Título**: ${TITLE}\",
               \"color\": ${COLOR},
               \"author\": {
                 \"name\": \"${{ github.actor }}\"
@@ -98,7 +98,7 @@ jobs:
             \"embeds\": [{
               \"title\": \"${STATUS}: #${{ github.event.issue.number }}\",
               \"url\": \"${{ github.event.issue.html_url }}\",
-              \"description\": \"`[${{ github.repository }}]`\n\n**Título**: ${TITLE}\",
+              \"description\": \"[${{ github.repository }}]\n\n**Título**: ${TITLE}\",
               \"color\": ${COLOR},
               \"author\": {
                 \"name\": \"${{ github.actor }}\"
