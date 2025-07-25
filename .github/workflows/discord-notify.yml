@@ -1,11 +1,9 @@
 name: "Notificar no Discord"
 
 on:
-  push:
-    branches: [main]
+  push: {}
   pull_request:
     types: [opened, reopened, closed]
-    branches: [main]
   issues:
     types: [opened, edited, closed]
 
