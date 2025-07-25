@@ -24,22 +24,26 @@ jobs:
       - name: Notificar Push no Discord
         if: github.event_name == 'push'
         run: |
+          # Define as variáveis do shell a partir do contexto do GitHub
+          ACTOR=${{ github.actor }}
           SHORT_SHA=$(echo "${{ github.sha }}" | cut -c1-7)
           COMMIT_MSG=$(echo "${{ github.event.head_commit.message }}" | sed 's/"/\\"/g' | sed "s/'/\\'/g")
-          curl -H "Content-Type: application/json" -X POST -d '{
-            "embeds": [{
-              "title": "📦 Novo Push para main",
-              "url": "${{ github.event.compare }}",
-              "description": "[${{ github.repository }}]\n\n**Commit**: [`${SHORT_SHA}`](${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}) - `${COMMIT_MSG}`",
-              "color": 3447003,
-              "author": {
-                "name": "${{ github.actor }}"
+          
+          # Usa aspas duplas no argumento -d para que as variáveis $ACTOR, $SHORT_SHA etc. sejam expandidas
+          curl -H "Content-Type: application/json" -X POST -d "{
+            \"embeds\": [{
+              \"title\": \"${ACTOR} fez um novo push para main\",
+              \"url\": \"${{ github.event.compare }}\",
+              \"description\": \"[${{ github.repository }}]\n\n**Commit**: [`${SHORT_SHA}`](${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}) - ${COMMIT_MSG}\",
+              \"color\": 3447003,
+              \"author\": {
+                \"name\": \"${{ github.actor }}\"
               },
-              "footer": {
-                "text": "Push em '"$(TZ=America/Sao_Paulo date "+%d/%m/%Y às %H:%M")"'"
+              \"footer\": {
+                \"text\": \"Push em '"$(TZ=America/Sao_Paulo date "+%d/%m/%Y às %H:%M")"'"
               }
             }]
-          }' "${{ secrets.DISCORD_WEBHOOK }}"
+          }" "${{ secrets.DISCORD_WEBHOOK }}"
 
       # Notificação para PULL REQUEST
       - name: Notificar Pull Request no Discord
