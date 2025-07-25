@@ -1,0 +1,110 @@
+name: "Notificar no Discord - Back-End"
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    types: [opened, reopened, closed]
+    branches: [main]
+  issues:
+    types: [opened, edited, closed]
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Verificar se o webhook está configurado
+        run: |
+          if [ -z "${{ secrets.DISCORD_WEBHOOK }}" ]; then
+            echo "⚠️ DISCORD_WEBHOOK não está configurado."
+            exit 1
+          fi
+
+      # Notificação para PUSH
+      - name: Notificar Push no Discord
+        if: github.event_name == 'push'
+        run: |
+          SHORT_SHA=$(echo "${{ github.sha }}" | cut -c1-7)
+          COMMIT_MSG=$(echo "${{ github.event.head_commit.message }}" | sed 's/"/\\"/g' | sed "s/'/\\'/g")
+          curl -H "Content-Type: application/json" -X POST -d '{
+            "embeds": [{
+              "title": "📦 Novo Push para `main`",
+              "url": "${{ github.event.compare }}",
+              "description": "`[${{ github.repository }}]`\n\n**Commit**: [`${SHORT_SHA}`](${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}) - `${COMMIT_MSG}`",
+              "color": 3447003,
+              "author": {
+                "name": "${{ github.actor }}"
+              },
+              "footer": {
+                "text": "Push em '"$(TZ=America/Sao_Paulo date "+%d/%m/%Y às %H:%M")"'"
+              }
+            }]
+          }' "${{ secrets.DISCORD_WEBHOOK }}"
+
+      # Notificação para PULL REQUEST
+      - name: Notificar Pull Request no Discord
+        if: github.event_name == 'pull_request'
+        run: |
+          ACTION="${{ github.event.action }}"
+          TITLE=$(echo "${{ github.event.pull_request.title }}" | sed 's/"/\\"/g' | sed "s/'/\\'/g")
+          
+          if [[ "${{ github.event.action }}" == "closed" && "${{ github.event.pull_request.merged }}" == "true" ]]; then
+            ACTION="merged"
+            COLOR=10181046
+            STATUS="✅ PR Merged"
+          elif [[ "${{ github.event.action }}" == "closed" ]]; then
+            ACTION="closed"
+            COLOR=15158332
+            STATUS="❌ PR Fechado"
+          else
+            COLOR=3447003
+            STATUS="🚀 PR Aberto/Reaberto"
+          fi
+
+          curl -H "Content-Type: application/json" -X POST -d "{
+            \"embeds\": [{
+              \"title\": \"${STATUS}: #${{ github.event.pull_request.number }}\",
+              \"url\": \"${{ github.event.pull_request.html_url }}\",
+              \"description\": \"`[${{ github.repository }}]`\n\n**Título**: ${TITLE}\",
+              \"color\": ${COLOR},
+              \"author\": {
+                \"name\": \"${{ github.actor }}\"
+              },
+              \"footer\": {
+                \"text\": \"Pull Request ${ACTION} em '"$(TZ=America/Sao_Paulo date "+%d/%m/%Y às %H:%M")"'"
+              }
+            }]
+          }" "${{ secrets.DISCORD_WEBHOOK }}"
+      
+      # Notificação para ISSUE
+      - name: Notificar Issue no Discord
+        if: github.event_name == 'issues'
+        run: |
+          TITLE=$(echo "${{ github.event.issue.title }}" | sed 's/"/\\"/g' | sed "s/'/\\'/g")
+          ACTION="${{ github.event.action }}"
+          
+          if [[ "$ACTION" == "opened" ]]; then
+            COLOR=3447003
+            STATUS="🐞 Nova Issue"
+          elif [[ "$ACTION" == "closed" ]]; then
+            COLOR=10181046
+            STATUS="✔️ Issue Fechada"
+          else
+            COLOR=16776960
+            STATUS="📝 Issue Editada"
+          fi
+          
+          curl -H "Content-Type: application/json" -X POST -d "{
+            \"embeds\": [{
+              \"title\": \"${STATUS}: #${{ github.event.issue.number }}\",
+              \"url\": \"${{ github.event.issue.html_url }}\",
+              \"description\": \"`[${{ github.repository }}]`\n\n**Título**: ${TITLE}\",
+              \"color\": ${COLOR},
+              \"author\": {
+                \"name\": \"${{ github.actor }}\"
+              },
+              \"footer\": {
+                \"text\": \"Issue ${ACTION} em '"$(TZ=America/Sao_Paulo date "+%d/%m/%Y às %H:%M")"'"
+              }
+            }]
+          }" "${{ secrets.DISCORD_WEBHOOK }}"
