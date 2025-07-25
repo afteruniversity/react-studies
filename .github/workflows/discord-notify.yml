@@ -41,7 +41,7 @@ jobs:
                 \"author\": {
                   \"name\": \"${COMMIT_AUTHOR}\"
                 },
-                \"description\": \"**${COMMIT_AUTHOR}** pushed to branch **${COMMIT_BRANCH}** of **${REPO_NAME}** (${COMMIT_URL})\",
+                \"description\": \"**${COMMIT_AUTHOR}** pushed to branch **${COMMIT_BRANCH}** of **${REPO_NAME}** [${SHORT_SHA}](${COMMIT_URL})\",
                 \"color\": 15158332,
                 \"footer\": {
                   \"text\": \"${DATA_HORA}\"
