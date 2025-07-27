@@ -1,17 +1,17 @@
-"use client"
-import { useEffect, useState } from "react"
+"use client";
+import { useEffect, useState } from "react";
 
 function Page() {
-  const [likes, setLikes] = useState(0)
-  const [input, setInput] = useState("Nada")
+  const [likes, setLikes] = useState(0);
+  const [input, setInput] = useState("Nada");
 
   function Like() {
-    setLikes((prevLikes) => prevLikes + 1)
+    setLikes((prevLikes) => prevLikes + 1);
   }
 
   useEffect(() => {
-    console.log("Algo mudou.")
-  })
+    console.log("Algo mudou.");
+  });
 
   /*
     useEffect
@@ -26,7 +26,9 @@ function Page() {
     <div className="min-h-screen flex items-center justify-center p-4">
       <div className="bg-white rounded-2xl shadow-xl p-8 w-full max-w-md space-y-6">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-800 mb-2">Interação com React</h1>
+          <h1 className="text-2xl font-bold text-gray-800 mb-2">
+            Interação com React
+          </h1>
           <p className="text-gray-600 text-sm">Exemplo de useEffect</p>
         </div>
 
@@ -46,7 +48,43 @@ function Page() {
         </div>
       </div>
     </div>
-  )
+  );
 }
 
-export default Page
+export default Page;
+
+{
+  /*
+  CÓDIGO PRÉ CSS (FORMA SIMPLIFICADA DO ARQUIVO)
+
+  "use client";
+
+import { useEffect, useState } from "react";
+
+function Page() {
+  const [likes, setLikes] = useState(0);
+  const [input, setInput] = useState("Nada");
+
+  function Like() {
+    setLikes(prevLikes => prevLikes + 1)
+  }
+
+  useEffect (() => {
+    console.log("Algo mudou.")
+  })
+
+    return (
+      <div>
+        <p>Quantidade de likes: {likes}</p>
+        <button onClick={Like}>LIKE</button>
+
+        <p>O que você digitou no Input {input}</p>
+        <input onChange={event => setInput(event.target.value)} />
+      </div>
+    );
+}
+
+export default Page;
+
+  */
+}
